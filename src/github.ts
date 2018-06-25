@@ -128,7 +128,7 @@ export function loadJsonFile<T>(path: string, html = false) {
 
 export function loadIssueByTerm(term: string) {
   const q = `"${term}" type:issue in:title repo:${owner}/${repo}`;
-  const request = githubRequest(`search/issues?q=${encodeURIComponent(q)}&sort=created&order=asc`);
+  const request = githubRequest(`search/issues?q=${encodeURIComponent(q)}`);
   return githubFetch(request).then<IssueSearchResponse>(response => {
     if (!response.ok) {
       throw new Error('Error fetching issue via search.');
@@ -140,9 +140,15 @@ export function loadIssueByTerm(term: string) {
     }
     if (results.total_count > 1) {
       // tslint:disable-next-line:no-console
-      console.warn(`Multiple issues match "${q}". Using earliest created.`);
+      //console.warn(`Multiple issues match "${q}". Using earliest created.`);
     }
-    return results.items[0];
+
+    if(term === results.items[0].title) {
+      return results.items[0];
+    }
+    else {
+      return null;
+    }
   });
 }
 
@@ -190,11 +196,12 @@ export function loadUser(): Promise<User | null> {
 }
 
 export function createIssue(issueTerm: string, documentUrl: string, title: string, description: string) {
+  //body: `# ${title}\n\n${description}\n\n[${documentUrl}](${documentUrl})`
   const request = new Request(`${UTTERANCES_API}/repos/${owner}/${repo}/issues`, {
     method: 'POST',
     body: JSON.stringify({
       title: issueTerm,
-      body: `# ${title}\n\n${description}\n\n[${documentUrl}](${documentUrl})`
+      body: `# ${title}`
     })
   });
   request.headers.set('Accept', GITHUB_ENCODING__REACTIONS_PREVIEW);

@@ -44,5 +44,8 @@
     "primer-navigation": "^1.5.4",
     "tslint": "^5.10.0",
     "typescript": "^2.9.1"
+  },
+  "dependencies": {
+    "yarn": "^1.7.0"
   }
 }
